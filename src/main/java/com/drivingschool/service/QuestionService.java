@@ -23,7 +23,9 @@ public class QuestionService {
     }
 
     public Page<Question> findAll(String textSubstring, Pageable pageable) {
-        return questionRepository.findAllByTextContaining(textSubstring, pageable);
+        if(textSubstring != null)
+            return questionRepository.findAllByTextContaining(textSubstring, pageable);
+        return questionRepository.findAll(pageable);
     }
 
     public Question save(Question question) throws RuntimeException {

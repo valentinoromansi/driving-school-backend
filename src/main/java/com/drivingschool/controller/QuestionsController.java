@@ -26,7 +26,7 @@ public class QuestionsController {
 
     @GetMapping
     public ResponseEntity<List<Question>> getQuestion(
-            @RequestParam String textSubstring,
+            @RequestParam(required = false) String textSubstring,
             Pageable pageable
     ) {
         Page<Question> questions = questionService.findAll(textSubstring, pageable);
