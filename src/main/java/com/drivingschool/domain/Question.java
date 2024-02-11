@@ -1,6 +1,8 @@
 package com.drivingschool.domain;
 
+import com.drivingschool.domain.enumeration.QuestionTypeE;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -20,6 +22,9 @@ public class Question {
     String text;
     String explanation;
     //Long question_type_id;
+    @ManyToOne
+    @JoinColumn(name = "question_type_id")
+    QuestionType questionType;
     @JsonIgnore
     @UpdateTimestamp
     Date last_updated;

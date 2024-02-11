@@ -2,6 +2,7 @@ package com.drivingschool.controller;
 
 import com.drivingschool.domain.Question;
 import com.drivingschool.service.QuestionService;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +17,7 @@ import java.util.List;
 public class QuestionsController {
 
     final QuestionService questionService;
+
 
     @Autowired
     public QuestionsController(QuestionService questionService) {
@@ -38,5 +40,6 @@ public class QuestionsController {
         questionService.save(question);
         return ResponseEntity.ok().body(question);
     }
+
 
 }
