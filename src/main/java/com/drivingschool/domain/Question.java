@@ -1,10 +1,7 @@
 package com.drivingschool.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.GenerationType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -19,9 +16,11 @@ public class Question {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     Long id;
     @NotNull
+    @Column(unique=true)
     String text;
     String explanation;
     //Long question_type_id;
+    @JsonIgnore
     @UpdateTimestamp
     Date last_updated;
 }
