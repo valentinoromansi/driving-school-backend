@@ -1,6 +1,7 @@
 package com.drivingschool.controller;
 
 import com.drivingschool.domain.Question;
+import com.drivingschool.dto.QuestionDTO;
 import com.drivingschool.service.QuestionService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,10 +35,10 @@ public class QuestionsController {
     }
 
     @PostMapping
-    public ResponseEntity<Question> saveQuestion(
-            @RequestBody Question question
+    public ResponseEntity<QuestionDTO> saveQuestion(
+            @RequestBody QuestionDTO questionDto
     ) {
-        questionService.save(question);
+        QuestionDTO question = questionService.save(questionDto);
         return ResponseEntity.ok().body(question);
     }
 
