@@ -3,10 +3,9 @@ package com.drivingschool.mapper;
 import com.drivingschool.domain.Question;
 import com.drivingschool.domain.QuestionType;
 import com.drivingschool.domain.enumeration.QuestionTypeE;
-import com.drivingschool.dto.QuestionDTO;
+import com.drivingschool.dto.QuestionDto;
 import org.junit.Test;
 import org.mapstruct.factory.Mappers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -25,7 +24,7 @@ public class QuestionMapperTest {
                 .questionType(new QuestionType(QuestionTypeE.SELECTED))
                 .build();
 
-        QuestionDTO dto = mapper.toDto(entity);
+        QuestionDto dto = mapper.toDto(entity);
 
         assertThat(entity.getId()).isEqualTo(dto.getId());
         assertThat(entity.getText()).isEqualTo(dto.getText());
@@ -35,7 +34,7 @@ public class QuestionMapperTest {
 
     @Test
     public void toEntity() {
-        QuestionDTO dto = QuestionDTO.builder()
+        QuestionDto dto = QuestionDto.builder()
                 .id(1L)
                 .text("text")
                 .explanation("explanation")

@@ -1,18 +1,15 @@
 package com.drivingschool.service;
 
 import com.drivingschool.domain.Question;
-import com.drivingschool.dto.QuestionDTO;
+import com.drivingschool.dto.QuestionDto;
 import com.drivingschool.exception.DatabaseResourceException;
 import com.drivingschool.mapper.QuestionMapper;
 import com.drivingschool.repository.QuestionRepository;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -32,11 +29,11 @@ public class QuestionService {
         return questionRepository.findAll(pageable);
     }
 
-    public QuestionDTO save(QuestionDTO dto) throws RuntimeException {
-        Question question = questionMapper.toEntity(dto);
-        boolean alreadyExist = questionRepository.findOneByText(question.getText()).isPresent();
+    public QuestionDto save(QuestionDto dto) throws RuntimeException {
+        boolean alreadyExist = questionRepository.findOneByText(dto.getText()).isPresent();
         if (alreadyExist)
-            throw new DatabaseResourceException("Question with text '" + question.getText() + "' already exists.");
+            throw new DatabaseResourceException("Question with text '" + dto.getText() + "' already exists.");
+        Question question = questionMapper.toEntity(dto);
         log.info(String.valueOf(question.getId()));
         question = questionRepository.save(question);
         return questionMapper.toDto(question);
