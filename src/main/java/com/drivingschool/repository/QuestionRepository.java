@@ -13,9 +13,10 @@ import java.util.Optional;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    public Optional<Question> findOneByText(String text);
+    Optional<Question> findOneById(Long id);
+    Optional<Question> findOneByText(String text);
     Page<Question> findAllByTextContaining(String textSubstring, Pageable pageable);
 
     @Query("select q from Question q where text like %:textSubstring%")
-    public List<Question> findAllByTextContaining_query(@Param("textSubstring") String textSubstring);
+    List<Question> findAllByTextContaining_query(@Param("textSubstring") String textSubstring);
 }

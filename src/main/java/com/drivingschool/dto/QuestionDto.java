@@ -5,6 +5,7 @@ import com.drivingschool.domain.enumeration.QuestionTypeE;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -16,4 +17,5 @@ public class QuestionDto {
     String explanation;
     QuestionTypeE questionType;
     List<AnswerDto> answers;
+    Date last_updated;
 }

@@ -32,13 +32,11 @@ public class Question {
     @ManyToOne
     @JoinColumn(name = "question_type_id")
     QuestionType questionType;
-    @JsonIgnore
     @UpdateTimestamp
     Date last_updated;
     @OneToMany(
             mappedBy = "question",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
+            cascade = CascadeType.ALL
     )
     @JsonIgnoreProperties(value = "question")
     List<Answer> answers;

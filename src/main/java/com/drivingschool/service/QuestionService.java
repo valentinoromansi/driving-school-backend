@@ -11,6 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 public class QuestionService {
@@ -37,5 +39,12 @@ public class QuestionService {
         log.info(String.valueOf(question.getId()));
         question = questionRepository.save(question);
         return questionMapper.toDto(question);
+    }
+
+    public void delete(Long id) {
+        Optional<Question> question = questionRepository.findOneById(id);
+        if(question.isEmpty())
+            throw new DatabaseResourceException("Question with id '" + id + "' does not exist.");
+        questionRepository.delete(question.get());
     }
 }
