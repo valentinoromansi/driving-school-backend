@@ -3,7 +3,9 @@ package com.drivingschool.repository;
 import com.drivingschool.domain.Answer;
 import com.drivingschool.domain.Question;
 import com.drivingschool.domain.QuestionType;
+import com.drivingschool.domain.ResourceType;
 import com.drivingschool.domain.enumeration.QuestionTypeE;
+import com.drivingschool.domain.enumeration.ResourceTypeE;
 import com.drivingschool.service.QuestionService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
@@ -14,23 +16,29 @@ public class DatabaseInitializer {
     private final QuestionTypeRepository questionTypeRepository;
     private final QuestionRepository questionRepository;
     private AnswerRepository answersRepository;
+    private ResourceTypeRepository resourceTypeRepository;
 
     public DatabaseInitializer(
             QuestionTypeRepository questionTypeRepository,
             QuestionRepository questionRepository,
-            AnswerRepository answersRepository
+            AnswerRepository answersRepository, ResourceTypeRepository resourceTypeRepository
     ) {
         this.questionTypeRepository = questionTypeRepository;
         this.questionRepository = questionRepository;
         this.answersRepository = answersRepository;
+        this.resourceTypeRepository = resourceTypeRepository;
     }
 
     @PostConstruct
     public void init() {
-            for (QuestionTypeE type : QuestionTypeE.values()) {
-                QuestionType questionType = new QuestionType(type);
-                questionTypeRepository.save(questionType);
-            }
+        for (QuestionTypeE type : QuestionTypeE.values()) {
+            QuestionType questionType = new QuestionType(type);
+            questionTypeRepository.save(questionType);
+        }
+        for (ResourceTypeE type : ResourceTypeE.values()) {
+            ResourceType resourceType = new ResourceType(type);
+            resourceTypeRepository.save(resourceType);
+        }
     }
 
     @PostConstruct
