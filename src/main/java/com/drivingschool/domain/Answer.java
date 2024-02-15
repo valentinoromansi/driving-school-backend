@@ -21,6 +21,6 @@ public class Answer {
     String text;
     @NotNull
     Boolean correct;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     private Question question;
 }

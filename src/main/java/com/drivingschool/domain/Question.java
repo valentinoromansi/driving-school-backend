@@ -30,7 +30,7 @@ public class Question {
     String explanation;
     //Long question_type_id;
     @ManyToOne
-    @JoinColumn(name = "question_type_id")
+    @JoinColumn(name = "question_type_id", nullable = false)
     QuestionType questionType;
     @ManyToMany
     @JoinTable(name = "map_question__resource",

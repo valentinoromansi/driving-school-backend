@@ -20,6 +20,6 @@ public class Resource {
     @NotNull
     String uri;
     @ManyToOne
-    @JoinColumn(name = "resource_type_id")
+    @JoinColumn(name = "resource_type_id", nullable = false)
     ResourceType resourceType;
 }
