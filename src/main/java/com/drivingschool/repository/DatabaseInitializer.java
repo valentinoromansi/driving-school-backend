@@ -1,32 +1,33 @@
 package com.drivingschool.repository;
 
-import com.drivingschool.domain.Answer;
-import com.drivingschool.domain.Question;
-import com.drivingschool.domain.QuestionType;
-import com.drivingschool.domain.ResourceType;
+import com.drivingschool.domain.*;
 import com.drivingschool.domain.enumeration.QuestionTypeE;
 import com.drivingschool.domain.enumeration.ResourceTypeE;
 import com.drivingschool.service.QuestionService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 public class DatabaseInitializer {
 
     private final QuestionTypeRepository questionTypeRepository;
     private final QuestionRepository questionRepository;
-    private AnswerRepository answersRepository;
-    private ResourceTypeRepository resourceTypeRepository;
+    private final AnswerRepository answersRepository;
+    private final ResourceTypeRepository resourceTypeRepository;
+    private final ResourceRepository resourceRepository;
 
     public DatabaseInitializer(
             QuestionTypeRepository questionTypeRepository,
             QuestionRepository questionRepository,
-            AnswerRepository answersRepository, ResourceTypeRepository resourceTypeRepository
+            AnswerRepository answersRepository, ResourceTypeRepository resourceTypeRepository, ResourceRepository resourceRepository
     ) {
         this.questionTypeRepository = questionTypeRepository;
         this.questionRepository = questionRepository;
         this.answersRepository = answersRepository;
         this.resourceTypeRepository = resourceTypeRepository;
+        this.resourceRepository = resourceRepository;
     }
 
     @PostConstruct
@@ -44,6 +45,25 @@ public class DatabaseInitializer {
     @PostConstruct
     public void mockInitQuestions() {
         /**
+         * Resources
+         */
+        if(resourceRepository.findById(1L).isEmpty()) {
+            Resource resource = Resource.builder()
+                    .id(1L)
+                    .uri("https://autoskola-ispiti.com/images/medium/g6649_1.png")
+                    .resourceType(new ResourceType(ResourceTypeE.IMAGE))
+                    .build();
+            resourceRepository.save(resource);
+        }
+        if(resourceRepository.findById(2L).isEmpty()) {
+            Resource resource = Resource.builder()
+                    .id(2L)
+                    .uri("https://autoskola-ispiti.com/images/medium/g6654_1.png")
+                    .resourceType(new ResourceType(ResourceTypeE.IMAGE))
+                    .build();
+            resourceRepository.save(resource);
+        }
+        /**
          * Questions
          */
         if(questionRepository.findById(1L).isEmpty()) {
@@ -52,6 +72,10 @@ public class DatabaseInitializer {
                     .text("Question 1?")
                     .explanation("explanation")
                     .questionType(new QuestionType(QuestionTypeE.SELECTED))
+                    .resources(List.of(
+                            Resource.builder().id(1L).build(),
+                            Resource.builder().id(2L).build()
+                    ))
                     .build();
             questionRepository.save(question);
         }

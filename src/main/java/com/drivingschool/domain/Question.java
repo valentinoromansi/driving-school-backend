@@ -32,12 +32,11 @@ public class Question {
     @ManyToOne
     @JoinColumn(name = "question_type_id")
     QuestionType questionType;
-    @UpdateTimestamp
-    Date last_updated;
-    @OneToMany(
-            mappedBy = "question",
-            cascade = CascadeType.ALL
+    @ManyToMany
+    @JoinTable(name = "map_question__resource",
+            joinColumns = @JoinColumn(name = "question_id"),
+            inverseJoinColumns = @JoinColumn(name = "resource_id")
     )
-    @JsonIgnoreProperties(value = "question")
-    List<Answer> answers;
+    @JsonIgnoreProperties("resourceType")
+    List<Resource> resources;
 }
