@@ -1,15 +1,22 @@
 package com.drivingschool.repository;
 
+import com.drivingschool.DrivingschoolApplication;
 import com.drivingschool.domain.*;
 import com.drivingschool.domain.enumeration.QuestionTypeE;
 import com.drivingschool.domain.enumeration.ResourceTypeE;
-import com.drivingschool.service.QuestionService;
+import com.drivingschool.mapper.AnswerMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
+import jakarta.transaction.Transactional;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.*;
 
 @Component
+@Log4j2
 public class DatabaseInitializer {
 
     private final QuestionTypeRepository questionTypeRepository;
@@ -17,21 +24,23 @@ public class DatabaseInitializer {
     private final AnswerRepository answersRepository;
     private final ResourceTypeRepository resourceTypeRepository;
     private final ResourceRepository resourceRepository;
+    private final AnswerMapper answerMapper;
 
     public DatabaseInitializer(
             QuestionTypeRepository questionTypeRepository,
             QuestionRepository questionRepository,
-            AnswerRepository answersRepository, ResourceTypeRepository resourceTypeRepository, ResourceRepository resourceRepository
+            AnswerRepository answersRepository, ResourceTypeRepository resourceTypeRepository, ResourceRepository resourceRepository, AnswerMapper answerMapper
     ) {
         this.questionTypeRepository = questionTypeRepository;
         this.questionRepository = questionRepository;
         this.answersRepository = answersRepository;
         this.resourceTypeRepository = resourceTypeRepository;
         this.resourceRepository = resourceRepository;
+        this.answerMapper = answerMapper;
     }
 
-    @PostConstruct
-    public void init() {
+    //@PostConstruct
+    public void initDbEnumTypes() {
         for (QuestionTypeE type : QuestionTypeE.values()) {
             QuestionType questionType = new QuestionType(type);
             questionTypeRepository.save(questionType);
@@ -42,81 +51,48 @@ public class DatabaseInitializer {
         }
     }
 
+    public record AnswerSource(String text, Boolean correct) {}
+    private record QuestionSource(String question, List<AnswerSource> answers, QuestionTypeE type, List<String> imagesUrls) {}
+
+    private List<QuestionSource> parseQuestionsFromSource() {
+        List<QuestionSource> questions = new LinkedList<>();
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            questions = objectMapper
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                    .readValue(
+                            DrivingschoolApplication.class.getResource("/questions.json"),
+                            new TypeReference<>() {}
+                    );
+            // Log parsed info state
+            System.out.println("Questions parsed = " + questions.size());
+            for (QuestionTypeE type : QuestionTypeE.values())
+                System.out.println("Questions[" + type + "] parsed = " + questions.stream().filter(q -> q.type.equals(type)).count());
+        } catch (Exception e) {
+            throw new RuntimeException("Parsing resource file '/questions.json' failed with '" + e.getMessage() + "'");
+        }
+        if(questions.isEmpty())
+            log.warn("0 Questions parsed from parsed file '/questions.json'");
+
+        log.info(questions.stream().findFirst());
+
+        return questions;
+    }
+
+    @Transactional
     @PostConstruct
     public void mockInitQuestions() {
-        /**
-         * Resources
-         */
-        if(resourceRepository.findById(1L).isEmpty()) {
-            Resource resource = Resource.builder()
-                    .id(1L)
-                    .uri("https://autoskola-ispiti.com/images/medium/g6649_1.png")
-                    .resourceType(new ResourceType(ResourceTypeE.IMAGE))
-                    .build();
-            resourceRepository.save(resource);
-        }
-        if(resourceRepository.findById(2L).isEmpty()) {
-            Resource resource = Resource.builder()
-                    .id(2L)
-                    .uri("https://autoskola-ispiti.com/images/medium/g6654_1.png")
-                    .resourceType(new ResourceType(ResourceTypeE.IMAGE))
-                    .build();
-            resourceRepository.save(resource);
-        }
-        /**
-         * Questions
-         */
-        if(questionRepository.findById(1L).isEmpty()) {
+        initDbEnumTypes();
+
+        List<QuestionSource> questions = parseQuestionsFromSource();
+        for (var questionSource : questions) {
             Question question = Question.builder()
-                    .id(1L)
-                    .text("Question 1?")
-                    .explanation("explanation")
-                    .questionType(new QuestionType(QuestionTypeE.SELECTED))
-                    .resources(List.of(
-                            Resource.builder().id(1L).build(),
-                            Resource.builder().id(2L).build()
-                    ))
-                    .build();
+                    .text(questionSource.question)
+                    .questionType(new QuestionType(questionSource.type))
+                    .build()
+                    .addAnswers(answerMapper.sourcesToEntities(questionSource.answers));
             questionRepository.save(question);
-        }
-        if(questionRepository.findById(2L).isEmpty()) {
-            Question question = Question.builder()
-                    .id(2L)
-                    .text("Question 2?")
-                    .explanation("explanation2")
-                    .questionType(new QuestionType(QuestionTypeE.TYPED))
-                    .build();
-            questionRepository.save(question);
-        }
-        /**
-         * Answers
-         */
-        if (answersRepository.findById(1L).isEmpty()) {
-            Answer answer = Answer.builder()
-                    .id(1L)
-                    .text("Answer 1")
-                    .correct(true)
-                    .question(Question.builder().id(1L).build())
-                    .build();
-            answersRepository.save(answer);
-        }
-        if (answersRepository.findById(2L).isEmpty()) {
-            Answer answer = Answer.builder()
-                    .id(2L)
-                    .text("Answer 2")
-                    .correct(false)
-                    .question(Question.builder().id(1L).build())
-                    .build();
-            answersRepository.save(answer);
-        }
-        if (answersRepository.findById(3L).isEmpty()) {
-            Answer answer = Answer.builder()
-                    .id(3L)
-                    .text("Answer 3")
-                    .correct(true)
-                    .question(Question.builder().id(2L).build())
-                    .build();
-            answersRepository.save(answer);
         }
     }
 
