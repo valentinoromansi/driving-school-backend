@@ -1,7 +1,9 @@
 package com.drivingschool.controller;
 
+import com.drivingschool.annotations.RequestParams;
 import com.drivingschool.domain.Question;
 import com.drivingschool.dto.QuestionDto;
+import com.drivingschool.filter.QuestionFilter;
 import com.drivingschool.service.QuestionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,10 @@ public class QuestionsController {
 
     final QuestionService questionService;
 
+    public record TestRec(String abc){
+        public TestRec {
+        }
+    }
 
     @Autowired
     public QuestionsController(QuestionService questionService) {
@@ -26,10 +32,10 @@ public class QuestionsController {
 
     @GetMapping
     public ResponseEntity<List<Question>> getQuestion(
-            @RequestParam(required = false) String textSubstring,
-            Pageable pageable
+            Pageable pageable,
+            @RequestParams QuestionFilter filter
     ) {
-        Page<Question> questions = questionService.findAll(textSubstring, pageable);
+        Page<Question> questions = questionService.findAll(filter, pageable);
         return Util.getPaginatedResponse(questions);
     }
 

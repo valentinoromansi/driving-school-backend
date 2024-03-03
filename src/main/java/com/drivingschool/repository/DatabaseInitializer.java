@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -18,6 +19,9 @@ import java.util.*;
 @Component
 @Log4j2
 public class DatabaseInitializer {
+
+    @Value("${spring.database.create-and-fill-tables}")
+    private boolean createAndFillDbTables;
 
     private final QuestionTypeRepository questionTypeRepository;
     private final QuestionRepository questionRepository;
@@ -83,6 +87,9 @@ public class DatabaseInitializer {
     @Transactional
     @PostConstruct
     public void mockInitQuestions() {
+        if(!createAndFillDbTables)
+            return;
+
         initDbEnumTypes();
 
         List<QuestionSource> questions = parseQuestionsFromSource();

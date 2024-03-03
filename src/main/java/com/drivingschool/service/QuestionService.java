@@ -3,6 +3,7 @@ package com.drivingschool.service;
 import com.drivingschool.domain.Question;
 import com.drivingschool.dto.QuestionDto;
 import com.drivingschool.exception.DatabaseResourceException;
+import com.drivingschool.filter.QuestionFilter;
 import com.drivingschool.mapper.QuestionMapper;
 import com.drivingschool.repository.QuestionRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -25,9 +26,9 @@ public class QuestionService {
         this.questionMapper = questionMapper;
     }
 
-    public Page<Question> findAll(String textSubstring, Pageable pageable) {
-        if(textSubstring != null)
-            return questionRepository.findAllByTextContaining(textSubstring, pageable);
+    public Page<Question> findAll(QuestionFilter filter, Pageable pageable) {
+        if(filter.getText() != null)
+            return questionRepository.findAllByTextContaining(filter.getText(), pageable);
         return questionRepository.findAll(pageable);
     }
 

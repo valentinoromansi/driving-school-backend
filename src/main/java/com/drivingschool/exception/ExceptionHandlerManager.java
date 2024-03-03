@@ -21,7 +21,7 @@ public class ExceptionHandlerManager {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public void handleUnexpectedErrors(Exception e) {
-        log.error(String.valueOf(e.getCause()));
+        log.error(String.valueOf(e.getMessage()));
     }
 
     @ExceptionHandler(DatabaseResourceException.class)
