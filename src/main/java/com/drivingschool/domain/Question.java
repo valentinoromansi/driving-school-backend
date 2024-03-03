@@ -40,7 +40,7 @@ public class Question {
     @JsonIgnoreProperties(value = "question")
     List<Answer> answers;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.PERSIST)
     @JoinTable(name = "map_question__resource",
             joinColumns = @JoinColumn(name = "question_id"),
             inverseJoinColumns = @JoinColumn(name = "resource_id")
@@ -53,6 +53,11 @@ public class Question {
         for (var answer : answers)
             answer.setQuestion(this);
         this.answers = answers;
+        return this;
+    }
+
+    public Question addResources(List<Resource> resources) {
+        this.resources = resources;
         return this;
     }
 

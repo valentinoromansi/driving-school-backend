@@ -86,12 +86,20 @@ public class DatabaseInitializer {
         initDbEnumTypes();
 
         List<QuestionSource> questions = parseQuestionsFromSource();
+
         for (var questionSource : questions) {
+            List<Resource> resources = questionSource.imagesUrls.stream().map(url ->
+                    Resource.builder()
+                            .uri(url)
+                            .resourceType(new ResourceType(ResourceTypeE.IMAGE))
+                            .build())
+                    .toList();
             Question question = Question.builder()
                     .text(questionSource.question)
                     .questionType(new QuestionType(questionSource.type))
                     .build()
-                    .addAnswers(answerMapper.sourcesToEntities(questionSource.answers));
+                    .addAnswers(answerMapper.sourcesToEntities(questionSource.answers))
+                    .addResources(resources);
             questionRepository.save(question);
         }
     }
